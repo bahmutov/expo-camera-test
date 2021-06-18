@@ -1,23 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { Camera } from 'expo-camera';
+import React, { useState, useEffect } from 'react'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { Camera } from 'expo-camera'
+
+if (window.Cypress) {
+  // expose the Camera reference through the window object
+  // so it is reachable from Cypress test
+  window.__Camera = Camera
+  console.log('window.__Camera is available')
+}
 
 export default function App() {
-  const [hasPermission, setHasPermission] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [hasPermission, setHasPermission] = useState(null)
+  const [type, setType] = useState(Camera.Constants.Type.back)
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
+    ;(async () => {
+      const { status } = await Camera.requestPermissionsAsync()
+      setHasPermission(status === 'granted')
+    })()
+  }, [])
 
   if (hasPermission === null) {
-    return <View />;
+    return <Text testID="no-camera-permission">Could not get permission</Text>
   }
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return <Text testID="camera-blocked">No access to camera</Text>
   }
   return (
     <View style={styles.container}>
@@ -29,15 +36,16 @@ export default function App() {
               setType(
                 type === Camera.Constants.Type.back
                   ? Camera.Constants.Type.front
-                  : Camera.Constants.Type.back
-              );
-            }}>
+                  : Camera.Constants.Type.back,
+              )
+            }}
+          >
             <Text style={styles.text}> Flip </Text>
           </TouchableOpacity>
         </View>
       </Camera>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -62,4 +70,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'white',
   },
-});
+})
