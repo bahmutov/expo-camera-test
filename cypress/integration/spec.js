@@ -63,4 +63,40 @@ describe('Expo camera', () => {
     // for completeness, confirm our stub was used
     cy.get('@requestPermissionsAsync').should('have.been.calledOnce')
   })
+
+  it('starts with the back camera', () => {
+    let camera
+
+    cy.visit('/', {
+      onBeforeLoad(win) {
+        Object.defineProperty(win, '__Camera', {
+          set(c) {
+            camera = cy
+              .stub()
+              .as('Camera')
+              .callsFake(function () {
+                return new c(...arguments)
+              })
+            // make sure our mock Camera has required properties
+            camera.prototype = c.prototype
+            camera.requestPermissionsAsync = c.requestPermissionsAsync
+            camera.Constants = c.Constants
+          },
+          get() {
+            return camera
+          },
+        })
+      },
+    })
+
+    // uses the back camera by default
+    cy.get('@Camera')
+      .should('have.been.calledOnce')
+      .its('firstCall.args.0')
+      .should('have.property', 'type', 'back')
+
+    // hmm, why isn't our Camera mock called again?
+    cy.log('**flip camera**')
+    cy.get('[data-testid=flip]').click()
+  })
 })

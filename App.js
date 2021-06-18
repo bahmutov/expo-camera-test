@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import { Camera } from 'expo-camera'
+import { Camera as Cam } from 'expo-camera'
+
+// a trick to allow Cypress tests to wrap <Camera ...> calls in the app
+let Camera = Cam
 
 if (window.Cypress) {
   // expose the Camera reference through the window object
   // so it is reachable from Cypress test
   window.__Camera = Camera
   console.log('window.__Camera is available')
+  // set it back - now this could be a stubbed / wrapped Camera constructor
+  Camera = window.__Camera
 }
 
 export default function App() {
@@ -26,11 +31,15 @@ export default function App() {
   if (hasPermission === false) {
     return <Text testID="camera-blocked">No access to camera</Text>
   }
+  console.log('camera type %s', type)
+  console.log(Camera)
+
   return (
     <View style={styles.container}>
       <Camera style={styles.camera} type={type}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
+            testID="flip"
             style={styles.button}
             onPress={() => {
               setType(
@@ -68,6 +77,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 18,
-    color: 'white',
+    color: 'yellow',
   },
 })
