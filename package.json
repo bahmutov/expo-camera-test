@@ -1,11 +1,15 @@
 {
+  "name": "expo-camera-test",
+  "description": "Playing with Cypress and Expo camera module",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "dev": "start-test web 19006 cy:open",
+    "cy:open": "cypress open"
   },
   "dependencies": {
     "expo": "~41.0.1",
@@ -16,7 +20,10 @@
     "react-native-web": "~0.13.12"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0"
+    "@babel/core": "^7.9.0",
+    "cypress": "^7.5.0",
+    "prettier": "^2.3.1",
+    "start-server-and-test": "^1.12.5"
   },
   "private": true
 }
